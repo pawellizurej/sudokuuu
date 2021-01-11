@@ -9,6 +9,8 @@ FPS = 10
 
 WINDOWMULTIPLIER = 5
 WINDOWSIZE = 90
+BUTTON_SIZE = 15
+BUTTON_WIDTH = 225
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
@@ -17,11 +19,13 @@ RED = (255,0,0)
 
 WINDOWWIDTH = int(WINDOWSIZE * WINDOWMULTIPLIER)
 WINDOWHEIGHT = int(WINDOWSIZE * WINDOWMULTIPLIER)
-
+WINDOWHEIGHT_WITH_BUTTON = int(WINDOWSIZE * WINDOWMULTIPLIER) + int(BUTTON_SIZE*WINDOWMULTIPLIER)
 SQUARESIZE = int((WINDOWSIZE * WINDOWMULTIPLIER) / 3)
 CELLSIZE = int(SQUARESIZE / 3)
 #X = 0
 #Y = 0
+BUTTON1_COORDS = pg.Rect([0, WINDOWHEIGHT, BUTTON_WIDTH, 75])
+BUTTON2_COORDS = pg.Rect([225, WINDOWHEIGHT, BUTTON_WIDTH, 75])
 BOX = pg.Rect([0, 0, CELLSIZE, CELLSIZE])
 #MARKCELLSIZE = CELLSIZE
 
@@ -38,68 +42,119 @@ def drawGrid():
     for y in range(0, WINDOWHEIGHT, SQUARESIZE):  # draw horizontal lines
         pg.draw.line(SCREEN, BLACK, (0, y), (WINDOWWIDTH, y))
 
+    ### Draw Buttons
+    pg.draw.rect(SCREEN,BLACK, BUTTON1_COORDS, 2)
+    pg.draw.rect(SCREEN,BLACK, BUTTON2_COORDS, 2)
+
     return None
+
 
 def drawNumbers(grid):
     font = pg.font.SysFont('Arial MS', CELLSIZE)
     counterX = 0
     counterY = 0
     for row in grid:
-        print(row)
         for number in row:
             if number != 0:
-                SCREEN.blit(font.render("{}".format(number), True, BLACK), (CELLSIZE*counterX, CELLSIZE*counterY))
+                SCREEN.blit(font.render("{}".format(number), True, BLACK), (CELLSIZE*counterX+15, CELLSIZE*counterY+10))
             counterX += 1
         counterY += 1
         counterX = 0
-        #print(counterY)
-        #print(counterX)
 
+
+def drawLabels():
+    font = pg.font.SysFont('Arial MS', CELLSIZE)
+    SCREEN.blit(font.render("IMPORT", True, BLACK), (50, 475))
+    SCREEN.blit(font.render("SOLVE", True, RED), (275, 475))
 
 def drawMarked():
-    pg.draw.rect(SCREEN, RED, BOX, 2)
+    if BOX.y <= WINDOWHEIGHT:
+        pg.draw.rect(SCREEN, RED, BOX, 2)
+    if BOX.y > WINDOWHEIGHT and BOX.x < BUTTON_WIDTH:
+        pg.draw.rect(SCREEN, RED, BUTTON1_COORDS, 2)
+    if BOX.y > WINDOWHEIGHT and BOX.x >= BUTTON_WIDTH:
+        pg.draw.rect(SCREEN, RED, BUTTON2_COORDS, 2)
 
-def keys():
+
+def keys(grid):
     keys = pg.key.get_pressed()
 
-    if keys[pg.K_RIGHT] and BOX.x < 400:
-        BOX.x += CELLSIZE
-        #print(BOX.x, BOX.y)
-        #return x
-        #drawMarked(x, y)
-    if keys[pg.K_LEFT] and BOX.x > 0:
-        BOX.x -= CELLSIZE
-        #print(BOX.x, BOX.y)
-        #return x
-        #drawMarked(x, y)
-    if keys[pg.K_DOWN] and BOX.y < 400:
-        BOX.y += CELLSIZE
-        #print(BOX.x, BOX.y)
-        #return y
-        #drawMarked(x, y)
-    if keys[pg.K_UP] and BOX.y > 0:
-        BOX.y -= CELLSIZE
-        #print(BOX.x, BOX.y)
-        #return y
-        #drawMarked(x, y)
+    if BOX.y < WINDOWHEIGHT:
+        if keys[pg.K_RIGHT] and BOX.x < WINDOWWIDTH-CELLSIZE:
+            BOX.x += CELLSIZE
+            print(BOX.x, BOX.y)
+            #return x
+            #drawMarked(x, y)
+        if keys[pg.K_LEFT] and BOX.x > 0:
+            BOX.x -= CELLSIZE
+            print(BOX.x, BOX.y)
+            #return x
+            #drawMarked(x, y)
+        if keys[pg.K_DOWN] and BOX.y < WINDOWHEIGHT_WITH_BUTTON:
+            BOX.y += CELLSIZE
+            print(BOX.x, BOX.y)
+            #return y
+            #drawMarked(x, y)
+        if keys[pg.K_UP] and BOX.y > 0:
+            BOX.y -= CELLSIZE
+            print(BOX.x, BOX.y)
 
-    '''
+            #return y
+            #drawMarked(x, y)
+    if BOX.y >= WINDOWHEIGHT:
+        if keys[pg.K_RIGHT] and BOX.x <= 200:
+            BOX.x += BUTTON_WIDTH
+            print(BOX.x, BOX.y)
+            #return x
+            #drawMarked(x, y)
+        if keys[pg.K_LEFT] and BOX.x >= BUTTON_WIDTH:
+            BOX.x -= BUTTON_WIDTH
+            print(BOX.x, BOX.y)
+            #return x
+            #drawMarked(x, y)
+        if keys[pg.K_DOWN] and BOX.y < WINDOWHEIGHT_WITH_BUTTON:
+            BOX.y += CELLSIZE*1.5
+            print(BOX.x, BOX.y)
+            #return y
+            #drawMarked(x, y)
+        if keys[pg.K_UP] and BOX.y > 0:
+            BOX.y -= CELLSIZE*1.5
+            print(BOX.x, BOX.y)
+
+            BOX.x = (WINDOWHEIGHT-CELLSIZE)/2
+            BOX.y = WINDOWHEIGHT-CELLSIZE
+
+            #return y
+            #drawMarked(x, y)
+    gridI = BOX.y//CELLSIZE
+    gridJ = BOX.x//CELLSIZE
+
     if keys[pg.K_1]:
+        grid[gridI][gridJ]=1
     if keys[pg.K_2]:
+        grid[gridI][gridJ]=2
     if keys[pg.K_3]:
+        grid[gridI][gridJ]=3
     if keys[pg.K_4]:
+        grid[gridI][gridJ]=4
     if keys[pg.K_5]:
+        grid[gridI][gridJ]=5
     if keys[pg.K_6]:
+        grid[gridI][gridJ]=6
     if keys[pg.K_7]:
+        grid[gridI][gridJ]=7
     if keys[pg.K_8]:
+        grid[gridI][gridJ]=8
     if keys[pg.K_9]:
-    '''
+        grid[gridI][gridJ]=9
+    if keys[pg.K_0] or keys[pg.K_BACKSPACE]:
+        grid[gridI][gridJ]=0
 
 
 def main():
     global SCREEN, FPSCLOCK
     pg.init()
-    SCREEN = pg.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+    SCREEN = pg.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT_WITH_BUTTON))
     pg.display.set_caption('Sudoku Solver')
     FPSCLOCK = pg.time.Clock()
 
@@ -112,12 +167,11 @@ def main():
         FPSCLOCK.tick(FPS)
         SCREEN.fill(WHITE)
         drawGrid()
-        keys()
+        keys(grid)
         drawMarked()
         drawNumbers(grid)
+        drawLabels()
         pg.display.update()
-
-
 
 
 if __name__=='__main__':
