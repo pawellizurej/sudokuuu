@@ -1,9 +1,14 @@
 import pygame as pg, sys
-from pygame.locals import *
 from Include.board import emptyGrid as grid
-#from Include.solve_sud import solve
+import cv2 as cv
+import tkinter as tk
+from tkinter import *
+from tkinter import filedialog as fd
+from PIL import ImageTk, Image
+from Include.solve_sud import solve, printGRIDDDD
 
-#solve()
+#########################################################################################################
+###########################################################################################################3
 
 FPS = 10
 
@@ -28,6 +33,22 @@ BUTTON1_COORDS = pg.Rect([0, WINDOWHEIGHT, BUTTON_WIDTH, 75])
 BUTTON2_COORDS = pg.Rect([225, WINDOWHEIGHT, BUTTON_WIDTH, 75])
 BOX = pg.Rect([0, 0, CELLSIZE, CELLSIZE])
 #MARKCELLSIZE = CELLSIZE
+
+def importFile():
+    TK.title('Importing Image')
+    #TK.iconbitmap('')
+    TK.filename = fd.askopenfilename(initialdir="/Include", title = "Select a file",
+                                     filetypes=(("png files", "*.png"), ("jpg files", "*.jpg"), ("all files", "*.*")))
+    imLabel = Label(TK, text=TK.filename).pack()
+    imageImp = ImageTk.PhotoImage(Image.open(TK.filename))
+    imageImLabel = Label(image=imageImp).pack()
+    #print(imageImp)
+    if len(TK.filename) > 0:
+        # load the image from disk, convert it to grayscale, and detect
+        # edges in it
+        imgcv = cv.imread(TK.filename, 0)
+        cv.imshow('img', imgcv)
+    TK.mainloop()
 
 def drawGrid():
     ### Draw Minor Lines
@@ -123,7 +144,20 @@ def keys(grid):
 
             BOX.x = (WINDOWHEIGHT-CELLSIZE)/2
             BOX.y = WINDOWHEIGHT-CELLSIZE
-
+        if BOX.x < 225 and BOX.y >= 425:
+            if keys[pg.K_RETURN]:
+                print("Import ENTER CLICKED")
+                importFile()
+        if BOX.x >= 225 and BOX.y >= 425:
+            if keys[pg.K_RETURN]:
+                #print("Solve:", solve(grid))
+                #gridX = solve(grid)
+                #print("GridX: ", gridX)
+                printGRIDDDD(grid)
+                return solve(grid)
+                #grid = solve(grid)
+                #print('grid GUI', solve(grid))
+                #drawNumbers(grid)
             #return y
             #drawMarked(x, y)
     gridI = BOX.y//CELLSIZE
@@ -152,8 +186,9 @@ def keys(grid):
 
 
 def main():
-    global SCREEN, FPSCLOCK
+    global SCREEN, FPSCLOCK, TK
     pg.init()
+    TK = tk.Tk()
     SCREEN = pg.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT_WITH_BUTTON))
     pg.display.set_caption('Sudoku Solver')
     FPSCLOCK = pg.time.Clock()

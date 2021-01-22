@@ -1,11 +1,14 @@
-# from board import printCheckedGrid as pgrid
-from Include.board import emptyGrid as GRID, printCheckedGrid
-
+from Include.board import printCheckedGrid as pgrid
+#from Include.board import emptyGrid as printCheckedGrid #GRID
+import numpy as np
+'''
 print('Sudoku to solve:')
-printCheckedGrid(GRID)
+printCheckedGrid()
 print(' ')
+'''
 
-def isCorrect(x, y, num):
+
+def isCorrect(GRID, x, y, num):
     for i in range(0, 9):
         if GRID[x][i] == num:
             return False
@@ -24,20 +27,31 @@ def isCorrect(x, y, num):
     return True
 
 
-def solve():
+def solve(GRID):
     for x in range(len(GRID)):
         for y in range(len(GRID)):
             #print(y,x)
             if GRID[x][y] == 0:
                 for num in range(1, 10):
-                    if isCorrect(x, y, num):
+                    if isCorrect(GRID, x, y, num):
                         GRID[x][y] = num
-                        solve()
+                        solve(GRID)
                         GRID[x][y] = 0
                 return
-    print('Solved Sudoku:')
-    printCheckedGrid(GRID)
+    GRIDZ = GRID
+    print('GRIDZ', GRIDZ)
+    return GRIDZ
+    #print('Grid:', GRID)
+    #pgrid(GRID)
+    #print('chuj', GRID)
+    #print('Solved Sudoku:')
+    #printCheckedGrid(GRID)
+    #print('grid SOLVE',GRID)
 
+def printGRIDDDD(GRID):
+    bob = solve(GRID)
+    print('solve', bob)
+    print('printGRIDDDD',GRID)
+#print('solve(grid)',solve(grid))
 
-
-solve()
+#solve()
