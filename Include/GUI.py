@@ -1,14 +1,14 @@
 import pygame as pg, sys
 from Include.board import emptyGrid as grid
-import cv2 as cv
+import cv2
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog as fd
 from PIL import ImageTk, Image
 from Include.solve_sud import solve
-
+from Include.Img_processing import img_warp,create_grid
+import numpy as np
 FPS = 10
-
 WINDOWMULTIPLIER = 5
 WINDOWSIZE = 90
 BUTTON_SIZE = 15
@@ -43,9 +43,12 @@ def importFile():
     if len(TK.filename) > 0:
         # load the image from disk, convert it to grayscale, and detect
         # edges in it
-        imgcv = cv.imread(TK.filename, 0)
-        cv.imshow('img', imgcv)
+        output=img_warp(TK.filename)
+        grid=create_grid(output)
+        TK.destroy()
+        return grid
     TK.mainloop()
+
 
 def drawGrid():
     ### Draw Minor Lines
@@ -96,7 +99,7 @@ def drawMarked():
 
 def keys(grid):
     keys = pg.key.get_pressed()
-
+    counter=0
     if BOX.y < WINDOWHEIGHT:
         if keys[pg.K_RIGHT] and BOX.x < WINDOWWIDTH-CELLSIZE:
             BOX.x += CELLSIZE
@@ -144,19 +147,15 @@ def keys(grid):
         if BOX.x < 225 and BOX.y >= 425:
             if keys[pg.K_RETURN]:
                 print("Import ENTER CLICKED")
-                importFile()
+                grid_1 = importFile()
+                for i in range (0,9):
+                    grid[i]=grid_1[i]
+
+
         if BOX.x >= 225 and BOX.y >= 425:
             if keys[pg.K_RETURN]:
-                #print("Solve:", solve(grid))
-                #gridX = solve(grid)
-                #print("GridX: ", gridX)
-                #printGRIDDDD(grid)
                 return solve(grid)
-                #grid = solve(grid)
-                #print('grid GUI', solve(grid))
-                #drawNumbers(grid)
-            #return y
-            #drawMarked(x, y)
+
     gridI = BOX.y//CELLSIZE
     gridJ = BOX.x//CELLSIZE
 
@@ -199,6 +198,7 @@ def main():
         FPSCLOCK.tick(FPS)
         SCREEN.fill(WHITE)
         drawGrid()
+        print(grid)
         keys(grid)
         drawMarked()
         drawNumbers(grid)
@@ -206,6 +206,6 @@ def main():
         pg.display.update()
 
 
+
 if __name__=='__main__':
     main()
-
