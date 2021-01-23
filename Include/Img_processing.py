@@ -129,7 +129,7 @@ def split_into_parts(output):
 
 
 def create_grid(output):
-    model = load_model('trained_modelvxdddddd.h5')
+    model = load_model('trained_modelv20.h5')
     cells,value=split_into_parts(output)
     grid=[]
     for i in range (0,81):
