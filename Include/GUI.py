@@ -5,10 +5,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import filedialog as fd
 from PIL import ImageTk, Image
-from Include.solve_sud import solve, printGRIDDDD
-
-#########################################################################################################
-###########################################################################################################3
+from Include.solve_sud import solve
 
 FPS = 10
 
@@ -153,7 +150,7 @@ def keys(grid):
                 #print("Solve:", solve(grid))
                 #gridX = solve(grid)
                 #print("GridX: ", gridX)
-                printGRIDDDD(grid)
+                #printGRIDDDD(grid)
                 return solve(grid)
                 #grid = solve(grid)
                 #print('grid GUI', solve(grid))

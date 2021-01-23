@@ -1,57 +1,45 @@
-from Include.board import printCheckedGrid as pgrid
+#from Include.board import printCheckedGrid as pgrid
 #from Include.board import emptyGrid as printCheckedGrid #GRID
 import numpy as np
-'''
-print('Sudoku to solve:')
-printCheckedGrid()
-print(' ')
-'''
 
 
-def isCorrect(GRID, x, y, num):
-    for i in range(0, 9):
-        if GRID[x][i] == num:
-            return False
-
-    for i in range(0, 9):
-        if GRID[i][y] == num:
-            return False
-
-    startX = (x // 3) * 3
-    startY = (y // 3) * 3
-
-    for i in range(0, 3):
-        for j in range(0, 3):
-            if GRID[startX + i][startY + i] == num:
-                return False
-    return True
+def findNextCellToFill(grid, i, j):
+    for x in range(i, 9):
+        for y in range(j, 9):
+            if grid[x][y] == 0:
+                return x, y
+    for x in range(0, 9):
+        for y in range(0, 9):
+            if grid[x][y] == 0:
+                return x, y
+    return -1, -1
 
 
-def solve(GRID):
-    for x in range(len(GRID)):
-        for y in range(len(GRID)):
-            #print(y,x)
-            if GRID[x][y] == 0:
-                for num in range(1, 10):
-                    if isCorrect(GRID, x, y, num):
-                        GRID[x][y] = num
-                        solve(GRID)
-                        GRID[x][y] = 0
-                return
-    GRIDZ = GRID
-    print('GRIDZ', GRIDZ)
-    return GRIDZ
-    #print('Grid:', GRID)
-    #pgrid(GRID)
-    #print('chuj', GRID)
-    #print('Solved Sudoku:')
-    #printCheckedGrid(GRID)
-    #print('grid SOLVE',GRID)
+def isValid(grid, i, j, e):
+    rowOk = all([e != grid[i][x] for x in range(9)])
+    if rowOk:
+        columnOk = all([e != grid[x][j] for x in range(9)])
+        if columnOk:
+            # finding the top left x,y co-ordinates of the section containing the i,j cell
+            secTopX, secTopY = 3 * (i // 3), 3 * (j // 3)  # floored quotient should be used here.
+            for x in range(secTopX, secTopX + 3):
+                for y in range(secTopY, secTopY + 3):
+                    if grid[x][y] == e:
+                        return False
+            return True
+    return False
 
-def printGRIDDDD(GRID):
-    bob = solve(GRID)
-    print('solve', bob)
-    print('printGRIDDDD',GRID)
-#print('solve(grid)',solve(grid))
 
-#solve()
+def solve(grid, i=0, j=0):
+    i, j = findNextCellToFill(grid, i, j)
+    if i == -1:
+        return True
+    for e in range(1, 10):
+        if isValid(grid, i, j, e):
+            grid[i][j] = e
+            if solve(grid, i, j):
+                return True
+            # Undo the current cell for backtracking
+            grid[i][j] = 0
+    return False
+
