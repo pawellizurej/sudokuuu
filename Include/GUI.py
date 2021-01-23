@@ -1,13 +1,12 @@
-import pygame as pg, sys
-from Include.board import emptyGrid as grid
-import cv2
+import pygame as pg
+from Include.board import emptyGrid as grid, printCheckedGrid as pGrid
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog as fd
 from PIL import ImageTk, Image
-from Include.solve_sud import solve
+from Include.solve_sud import solve, printSolGrid
 from Include.Img_processing import img_warp,create_grid
-import numpy as np
+
 FPS = 10
 WINDOWMULTIPLIER = 5
 WINDOWSIZE = 90
@@ -24,22 +23,17 @@ WINDOWHEIGHT = int(WINDOWSIZE * WINDOWMULTIPLIER)
 WINDOWHEIGHT_WITH_BUTTON = int(WINDOWSIZE * WINDOWMULTIPLIER) + int(BUTTON_SIZE*WINDOWMULTIPLIER)
 SQUARESIZE = int((WINDOWSIZE * WINDOWMULTIPLIER) / 3)
 CELLSIZE = int(SQUARESIZE / 3)
-#X = 0
-#Y = 0
 BUTTON1_COORDS = pg.Rect([0, WINDOWHEIGHT, BUTTON_WIDTH, 75])
 BUTTON2_COORDS = pg.Rect([225, WINDOWHEIGHT, BUTTON_WIDTH, 75])
 BOX = pg.Rect([0, 0, CELLSIZE, CELLSIZE])
-#MARKCELLSIZE = CELLSIZE
 
 def importFile():
     TK.title('Importing Image')
-    #TK.iconbitmap('')
     TK.filename = fd.askopenfilename(initialdir="/Include", title = "Select a file",
                                      filetypes=(("png files", "*.png"), ("jpg files", "*.jpg"), ("all files", "*.*")))
     imLabel = Label(TK, text=TK.filename).pack()
     imageImp = ImageTk.PhotoImage(Image.open(TK.filename))
     imageImLabel = Label(image=imageImp).pack()
-    #print(imageImp)
     if len(TK.filename) > 0:
         # load the image from disk, convert it to grayscale, and detect
         # edges in it
@@ -103,58 +97,61 @@ def keys(grid):
     if BOX.y < WINDOWHEIGHT:
         if keys[pg.K_RIGHT] and BOX.x < WINDOWWIDTH-CELLSIZE:
             BOX.x += CELLSIZE
-            print(BOX.x, BOX.y)
+            #print(BOX.x, BOX.y)
             #return x
             #drawMarked(x, y)
         if keys[pg.K_LEFT] and BOX.x > 0:
             BOX.x -= CELLSIZE
-            print(BOX.x, BOX.y)
+            #print(BOX.x, BOX.y)
             #return x
             #drawMarked(x, y)
         if keys[pg.K_DOWN] and BOX.y < WINDOWHEIGHT_WITH_BUTTON:
             BOX.y += CELLSIZE
-            print(BOX.x, BOX.y)
+            #print(BOX.x, BOX.y)
             #return y
             #drawMarked(x, y)
         if keys[pg.K_UP] and BOX.y > 0:
             BOX.y -= CELLSIZE
-            print(BOX.x, BOX.y)
+            #print(BOX.x, BOX.y)
 
             #return y
             #drawMarked(x, y)
     if BOX.y >= WINDOWHEIGHT:
         if keys[pg.K_RIGHT] and BOX.x <= 200:
             BOX.x += BUTTON_WIDTH
-            print(BOX.x, BOX.y)
+            #print(BOX.x, BOX.y)
             #return x
             #drawMarked(x, y)
         if keys[pg.K_LEFT] and BOX.x >= BUTTON_WIDTH:
             BOX.x -= BUTTON_WIDTH
-            print(BOX.x, BOX.y)
+            #print(BOX.x, BOX.y)
             #return x
             #drawMarked(x, y)
         if keys[pg.K_DOWN] and BOX.y < WINDOWHEIGHT_WITH_BUTTON:
             BOX.y += CELLSIZE*1.5
-            print(BOX.x, BOX.y)
+            #print(BOX.x, BOX.y)
             #return y
             #drawMarked(x, y)
         if keys[pg.K_UP] and BOX.y > 0:
             BOX.y -= CELLSIZE*1.5
-            print(BOX.x, BOX.y)
+            #print(BOX.x, BOX.y)
 
             BOX.x = (WINDOWHEIGHT-CELLSIZE)/2
             BOX.y = WINDOWHEIGHT-CELLSIZE
         if BOX.x < 225 and BOX.y >= 425:
             if keys[pg.K_RETURN]:
-                print("Import ENTER CLICKED")
+                #print("Import ENTER CLICKED")
                 grid_1 = importFile()
                 for i in range (0,9):
                     grid[i]=grid_1[i]
-
+                print('Sudoku to Solve:')
+                pGrid(grid_1)
 
         if BOX.x >= 225 and BOX.y >= 425:
             if keys[pg.K_RETURN]:
-                return solve(grid)
+                solve(grid)
+                printSolGrid(grid)
+                #return solve(grid)
 
     gridI = BOX.y//CELLSIZE
     gridJ = BOX.x//CELLSIZE
@@ -198,7 +195,6 @@ def main():
         FPSCLOCK.tick(FPS)
         SCREEN.fill(WHITE)
         drawGrid()
-        print(grid)
         keys(grid)
         drawMarked()
         drawNumbers(grid)

@@ -1,7 +1,4 @@
-#from Include.board import printCheckedGrid as pgrid
-#from Include.board import emptyGrid as printCheckedGrid #GRID
-import numpy as np
-
+from Include.board import printCheckedGrid as pgrid
 
 def findNextCellToFill(grid, i, j):
     for x in range(i, 9):
@@ -43,3 +40,6 @@ def solve(grid, i=0, j=0):
             grid[i][j] = 0
     return False
 
+def printSolGrid(grid):
+    print('Solved Sudoku: ')
+    pgrid(grid)
