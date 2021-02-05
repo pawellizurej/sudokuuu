@@ -1,6 +1,6 @@
 from Include.board import printCheckedGrid as pgrid
 
-def findNextCellToFill(grid, i, j):
+def findNextCellToFill(grid, i, j):  # finds empty cell to be filled, when all is filled, returns -1
     for x in range(i, 9):
         for y in range(j, 9):
             if grid[x][y] == 0:
@@ -12,31 +12,32 @@ def findNextCellToFill(grid, i, j):
     return -1, -1
 
 
-def isCorrect(grid, i, j, e):
-    row = all([e != grid[i][x] for x in range(9)])
+def isCorrect(grid, i, j, num):  # check whether proposed solution is correct (returns true), returns bool false,
+    # when is not
+    row = all([num != grid[i][x] for x in range(9)])
     if row:
-        col = all([e != grid[x][j] for x in range(9)])
+        col = all([num != grid[x][j] for x in range(9)])
         if col:
-            # finding the top left x,y co-ordinates of the section containing the i,j cell
-            secTopX, secTopY = 3 * (i // 3), 3 * (j // 3)  # floored quotient should be used here.
-            for x in range(secTopX, secTopX + 3):
-                for y in range(secTopY, secTopY + 3):
-                    if grid[x][y] == e:
+            startX = 3 * (i // 3)
+            startY = 3 * (j // 3)
+            for x in range(startX, startX + 3):
+                for y in range(startY, startY + 3):
+                    if grid[x][y] == num:
                         return False
             return True
     return False
 
 
-def solve(grid, i=0, j=0):
+def solve(grid, i=0, j=0):  # solves sudoku
     i, j = findNextCellToFill(grid, i, j)
     if i == -1:
-        return True
-    for e in range(1, 10):
-        if isCorrect(grid, i, j, e):
-            grid[i][j] = e
+        return True  # finishes when sudoku is filled
+    for num in range(1, 10):
+        if isCorrect(grid, i, j, num):
+            grid[i][j] = num
             if solve(grid, i, j):
                 return True
-            # Undo the current cell for backtracking
+            # undoes current cell to backtrack
             grid[i][j] = 0
     return False
 
