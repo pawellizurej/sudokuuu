@@ -37,8 +37,8 @@ def importFile():
     if len(TK.filename) > 0:
         # load the image from disk, convert it to grayscale, and detect
         # edges in it
-        output=img_warp(TK.filename)
-        grid=create_grid(output)
+        output = img_warp(TK.filename)
+        grid = create_grid(output)
         TK.destroy()
         return grid
     TK.mainloop()

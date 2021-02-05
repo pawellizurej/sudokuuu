@@ -30,13 +30,7 @@ def detect_corners_from_contour(canvas, contours_main):
     cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
     approx_corners = sorted(np.concatenate(approx_corners).tolist())
 
-    for index, c in enumerate(approx_corners):
-        character = chr(65 + index)
 
-        cv2.putText(canvas, character, tuple(c), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-
-    # Rearranging the order of the corner points
-    approx_corners = [approx_corners[i] for i in [0, 2, 1, 3]]
     return approx_corners
 
 
@@ -49,15 +43,9 @@ def img_warp(path):
     contours, h = cv2.findContours(gray.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
     contours_main = contours[0]
-
     img = cv2.drawContours(img, contours_main, -1, (0, 255, 0), 5)
 
     canvas = np.zeros(img.shape, np.uint8)
-
-    corners = cv2.goodFeaturesToTrack(gray, 4, 0.01, 100)
-    corners = np.int0(corners)
-    corners = sorted(np.concatenate(corners).tolist())
-
     corners_p = detect_corners_from_contour(canvas, contours_main)
     up_left, down_left, up_right, down_right = sort_corners(corners_p)
     img1 = cv2.imread(path)
@@ -88,7 +76,6 @@ def edit_cells(img):
             img = cv2.bilateralFilter(img, 9, 75, 75)
             img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
             img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
-            # img = cv2.bitwise_not(img)
             img = cv2.GaussianBlur(img, (5, 5), 1)
 
             img_ret = img[y:y + h, x:x + w]
